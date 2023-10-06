@@ -1,4 +1,4 @@
-# RHEL Test Docker on ARM64 Mac
+# CentOS Test Docker on ARM64 Mac
 
 This project contains an example of how to install x86 VM with Docker on the Macbook Pro with M1 Pro CPU.
 
