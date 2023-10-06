@@ -5,6 +5,7 @@
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'qemu'
 Vagrant.configure("2") do |config|
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
@@ -67,6 +68,15 @@ Vagrant.configure("2") do |config|
   # View the documentation for the provider you are using for more
   # information on available options.
 
+  config.vm.provider "qemu" do |qe|
+    qe.arch = "x86_64"
+    qe.machine = "q35"
+    qe.cpu = "max"
+    qe.smp = "cpus=2,sockets=1,cores=2,threads=1"
+    qe.net_device = "virtio-net-pci"
+    qe.extra_qemu_args = %w(-accel tcg,thread=multi,tb-size=512)
+  end
+
   # Enable provisioning with a shell script. Additional provisioners such as
   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
   # documentation for more information about their specific syntax and use.
@@ -74,4 +84,36 @@ Vagrant.configure("2") do |config|
   #   apt-get update
   #   apt-get install -y apache2
   # SHELL
+  # config.vm.provision "docker" do |d|
+  #   d.run "camunda/zeebe:8.2.15"
+  # end
+  config.vm.provision "file", source: "./CentOS-Base.repo", destination: "/tmp/CentOS-Base.repo"
+  config.vm.provision "shell", inline: <<-SHELL
+     sudo mv /tmp/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo
+
+     # update
+     sudo yum update
+     
+     # add docker repo
+     sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+     sudo yum makecache fast
+
+     # create docker user
+     sudo groupadd docker
+     sudo usermod -aG docker vagrant
+     sudo gpasswd -a vagrant docker
+
+     # install docker
+     sudo yum install -y docker-ce
+
+     # install docker-compose
+     curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` > docker-compose
+     sudo mv /home/vagrant/docker-compose /usr/local/bin/docker-compose
+     sudo chmod +x /usr/local/bin/docker-compose
+     
+     # setup
+     sudo systemctl start docker
+     sudo systemctl enable docker
+     sudo systemctl restart docker
+  SHELL
 end
