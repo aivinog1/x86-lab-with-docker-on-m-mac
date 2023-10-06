@@ -11,8 +11,9 @@ I've gathered many guides in one place and already tried many approaches (I've e
 1. QEMU (tested with the version: 8.1.1)
 2. Vagrant (tested with the version: 2.3.7)
 3. Vagrant Qemu Plugin (tested with version: 0.3.5)
-4. Mac OS (tested with the version 13.5.1 (22G90))
-5. Vagrant CentOS box (name: generic/rhel7, version: 4.3.2)
+4. Vagrant Host Manager Plugin (tested with version: 1.8.10)
+5. Mac OS (tested with the version 13.5.1 (22G90))
+6. Vagrant CentOS box (name: generic/rhel7, version: 4.3.2)
 
 # How to
 If you already have all dependencies installed just run it with Vagrant:
